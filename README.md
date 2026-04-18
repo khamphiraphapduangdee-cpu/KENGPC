@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💠 CORE PC STORE (ระบบจัดสเปกคอมพิวเตอร์และจัดการสต็อก)
 
-## Getting Started
+โปรเจคเว็บแอปพลิเคชัน Full-Stack สำหรับร้านขายอุปกรณ์คอมพิวเตอร์ ที่มาพร้อมระบบ "จัดสเปกคอมด้วยตัวเอง" และ "ระบบหลังบ้าน (Admin)" สำหรับจัดการคลังสินค้า ดีไซน์ธีมดุดันสไตล์ Cyberpunk 
 
-First, run the development server:
+> **🌐 ลองเล่นเว็บจริง (Live Demo):** [ใส่ลิงก์ Vercel ของคุณที่นี่ เช่น https://kengpc.vercel.app]
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ ฟีเจอร์หลัก (Key Features)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+* **🛒 ระบบจัดสเปกคอมอัจฉริยะ:** ลูกค้าสามารถเลือกอุปกรณ์แต่ละชิ้น โดยระบบจะคำนวณราคารวมให้แบบเรียลไทม์
+* **⚡ แจ้งเตือนความเข้ากันได้ (Compatibility Check):** มีระบบเช็ค Socket ของ CPU และ Mainboard ถ้ารุ่นไม่ตรงกันจะมีแถบสีแดงเตือนทันที
+* **🔋 คำนวณการใช้ไฟ (Wattage Estimator):** ช่วยรวมค่า TDP ของอุปกรณ์ที่เลือก เพื่อแนะนำขนาด Power Supply ที่เหมาะสม
+* **🛡️ ระบบจัดการหลังบ้าน (Admin Dashboard):** หน้าต่างเฉพาะสำหรับแอดมิน เพื่อดูภาพรวมของร้าน
+* **📦 จัดการสต็อกง่ายในคลิกเดียว:** สามารถกดปุ่ม `+` และ `-` เพื่ออัปเดตจำนวนสินค้าในคลังได้ทันทีโดยไม่ต้องรีเฟรชหน้าเว็บ (Real-time update)
+* **💾 บันทึกสเปกอัตโนมัติ:** เมื่อจัดสเปกค้างไว้แล้วเผลอปิดเว็บ ข้อมูลจะยังอยู่ไม่หายไปไหน (Local Storage)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🛠️ เครื่องมือที่ใช้พัฒนา (Tech Stack)
 
-To learn more about Next.js, take a look at the following resources:
+* **Frontend:** Next.js 14 (App Router), React, Tailwind CSS
+* **Backend:** Next.js API Routes (สร้าง RESTful API ด้วยตัวเอง)
+* **Database:** SQLite (สำหรับ Local/Demo) จัดการโครงสร้างด้วย Prisma ORM
+* **UI & UX:** React Hot Toast (แจ้งเตือนป๊อปอัปสวยงาม), Fully Responsive (รองรับมือถือและคอมพิวเตอร์)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 วิธีติดตั้งและรันโปรเจคในเครื่อง (Local Setup)
 
-## Deploy on Vercel
+ถ้าต้องการรันโปรเจคนี้ในเครื่องของคุณเอง ทำตามขั้นตอนง่ายๆ ดังนี้ครับ:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **โคลนโปรเจคลงเครื่อง**
+   ```bash
+   git clone [https://github.com/](https://github.com/)[ชื่อผู้ใช้ของคุณ]/[ชื่อโปรเจค].git

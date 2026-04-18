@@ -5,8 +5,11 @@ import PartCard from '@/components/PartCard';
 import { Toaster, toast } from 'react-hot-toast';
 import Image from 'next/image';
 import * as htmlToImage from 'html-to-image';
+import { useRouter } from 'next/navigation'; // <-- 1. เพิ่มตัวเปลี่ยนหน้า
 
 export default function Home() {
+  const router = useRouter(); // <-- เปิดใช้งาน Router
+
   // --- 1. State สำหรับ Database ---
   const [PRODUCT_DATA, setPRODUCT_DATA] = useState<any>({});
   const [isLoadingDB, setIsLoadingDB] = useState(true);
@@ -20,8 +23,6 @@ export default function Home() {
   const [isMounted, setIsMounted] = useState(false);
 
   // --- 3. Modal States ---
-  const [showCheckout, setShowCheckout] = useState(false);
-  const [payMethod, setPayMethod] = useState<'qr' | 'card'>('qr');
   const [showConfirmReset, setShowConfirmReset] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,17 +35,15 @@ export default function Home() {
         console.log("⏳ กำลังดึงข้อมูลจาก Database...");
         const response = await fetch('/api/products');
         
-        // 🛑 เพิ่มตัวเช็คตรงนี้! ถ้าเซิร์ฟเวอร์ไม่ได้ส่งสถานะ 200 OK (เช่นส่ง 404 หรือ 500 มา) ให้เด้งไป catch ทันที
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const data = await response.json(); // ถ้ารอดมาถึงตรงนี้ แปลว่าเป็น JSON ชัวร์ๆ
+        const data = await response.json(); 
         
         console.log("✅ ดึงข้อมูลสำเร็จ! หน้าตาแบบนี้:", data);
         setPRODUCT_DATA(data); 
       } catch (error) {
-        // 🛑 ถ้ามันไม่ใช่ JSON หรือหา API ไม่เจอ มันจะมาตกตรงนี้ เว็บเราจะไม่พังครับ
         console.error("❌ ดึงข้อมูลพลาด (เช็ค API Route ด่วน!):", error);
       } finally {
         setIsLoadingDB(false);
@@ -55,7 +54,6 @@ export default function Home() {
   }, []);
 
   // --- 💾 5. ระบบ AUTO-SAVE (LocalStorage) ---
-  // ดึงข้อมูลเมื่อโหลดหน้าเว็บครั้งแรก
   useEffect(() => {
     setIsMounted(true);
     const savedSpec = localStorage.getItem('keng-spec');
@@ -69,7 +67,6 @@ export default function Home() {
     }
   }, []);
 
-  // บันทึกอัตโนมัติทุกครั้งที่ selectedParts เปลี่ยนแปลง
   useEffect(() => {
     if (isMounted) {
       localStorage.setItem('keng-spec', JSON.stringify(selectedParts));
@@ -78,7 +75,7 @@ export default function Home() {
 
   // --- ⚡ 6. ระบบคำนวณวัตต์ไฟ (WATTAGE CALCULATOR) ---
   const calculateTotalWattage = (partsObject: any) => {
-    let total = 50; // กินไฟพื้นฐาน (พัดลม, เมนบอร์ด, แรม, SSD)
+    let total = 50; 
     if (partsObject.cpu?.tdp) total += partsObject.cpu.tdp;
     if (partsObject.gpu?.tdp) total += partsObject.gpu.tdp;
     return total;
@@ -135,7 +132,6 @@ export default function Home() {
   const confirmExecuteReset = () => {
     setSelectedParts({});
     setActiveCategory(null);
-    setShowCheckout(false);
     setShowConfirmReset(false);
     toast(lang === 'en' ? 'Configuration Cleared' : 'ล้างรายการทั้งหมดแล้ว', {
       icon: '🗑️',
@@ -143,13 +139,16 @@ export default function Home() {
     });
   };
 
-  const handlePayment = () => {
-    toast.success(lang === 'en' ? "Payment Successful! Thank you." : "ชำระเงินสำเร็จ! ขอบคุณที่ใช้บริการ", {
-      style: { borderRadius: '16px', background: '#0a0a0a', color: '#00f2ff', border: '1px solid rgba(0, 242, 255, 0.3)' },
-      iconTheme: { primary: '#00f2ff', secondary: '#0a0a0a' },
-    });
-    setSelectedParts({});
-    setShowCheckout(false);
+  // 🚀 ฟังก์ชันส่งข้อมูลไปหน้า Checkout
+  const handleGoToCheckout = () => {
+    // 1. แปลง Object (เช่น { cpu: {...}, gpu: {...} }) เป็น Array
+    const cartArray = Object.values(selectedParts);
+    
+    // 2. เซฟลง LocalStorage ในชื่อ pc_cart เพื่อให้หน้า Checkout ดึงไปใช้
+    localStorage.setItem('pc_cart', JSON.stringify(cartArray));
+    
+    // 3. เด้งไปหน้าชำระเงิน
+    router.push('/checkout');
   };
 
   const getFilteredProducts = () => {
@@ -315,7 +314,7 @@ export default function Home() {
       </div>
 
       {/* --- Floating Summary Bar --- */}
-      {Object.keys(selectedParts).length > 0 && !showCheckout && !showShareModal && (
+      {Object.keys(selectedParts).length > 0 && !showShareModal && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-4xl z-40 animate-in fade-in slide-in-from-bottom-8 duration-500">
           <div className="bg-pc-surface/90 backdrop-blur-2xl border border-neon-cyan/40 p-4 md:p-6 rounded-[32px] shadow-[0_-10px_40px_-15px_rgba(0,242,255,0.4)] flex flex-col md:flex-row items-center justify-between gap-4">
             
@@ -355,7 +354,9 @@ export default function Home() {
               <button onClick={() => setShowShareModal(true)} className="hidden md:block px-4 py-3 bg-pc-dark border border-white/10 text-white font-black rounded-xl uppercase tracking-widest text-[10px] hover:border-neon-cyan hover:text-neon-cyan transition-all flex-shrink-0">
                  {content.btnShare}
               </button>
-              <button onClick={() => setShowCheckout(true)} className="flex-1 px-4 py-3 bg-gradient-to-r from-neon-cyan to-neon-purple text-pc-dark font-black rounded-xl uppercase tracking-widest text-xs shadow-[0_0_20px_rgba(0,242,255,0.4)] hover:scale-[1.02] active:scale-95 transition-all whitespace-nowrap">
+              
+              {/* --- เปลี่ยนปุ่มนี้ให้เรียกฟังก์ชันไปยังหน้า Checkout --- */}
+              <button onClick={handleGoToCheckout} className="flex-1 px-4 py-3 bg-gradient-to-r from-neon-cyan to-neon-purple text-pc-dark font-black rounded-xl uppercase tracking-widest text-xs shadow-[0_0_20px_rgba(0,242,255,0.4)] hover:scale-[1.02] active:scale-95 transition-all whitespace-nowrap">
                 {content.btnOrder}
               </button>
             </div>
@@ -431,20 +432,6 @@ export default function Home() {
               <div className="flex gap-3">
                  <button onClick={() => setShowConfirmReset(false)} className="flex-1 py-3.5 rounded-xl border border-white/10 text-gray-400 font-bold text-xs uppercase tracking-widest hover:bg-white/5 hover:text-white transition-all">{lang === 'en' ? 'Cancel' : 'ยกเลิก'}</button>
                  <button onClick={confirmExecuteReset} className="flex-1 py-3.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-black text-xs uppercase tracking-widest shadow-[0_0_15px_rgba(239,68,68,0.4)] hover:shadow-[0_0_25px_rgba(239,68,68,0.6)] transition-all">{lang === 'en' ? 'Yes, Clear' : 'ยืนยันลบ'}</button>
-              </div>
-           </div>
-        </div>
-      )}
-
-      {/* --- CHECKOUT MODAL --- */}
-      {showCheckout && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
-           <div className="bg-pc-surface border border-neon-cyan/50 rounded-[40px] w-full max-w-5xl max-h-[90vh] overflow-y-auto custom-scrollbar shadow-[0_0_50px_rgba(0,242,255,0.15)] flex flex-col md:flex-row p-10 text-center">
-              <div className="w-full">
-                  <h2 className="text-2xl font-black text-neon-cyan uppercase italic mb-8">{content.checkoutTitle}</h2>
-                  <p className="text-gray-400 mb-8">Ready to checkout {totalPrice.toLocaleString()} THB</p>
-                  <button onClick={handlePayment} className="px-8 py-3 bg-neon-cyan text-pc-dark rounded-xl hover:scale-105 font-bold transition-all mr-4">Pay Now</button>
-                  <button onClick={() => setShowCheckout(false)} className="px-8 py-3 bg-white/10 rounded-xl hover:bg-white/20 transition-all text-white font-bold">Close</button>
               </div>
            </div>
         </div>
