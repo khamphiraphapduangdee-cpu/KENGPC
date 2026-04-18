@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// --- สร้างตารางเก็บข้อมูลฮาร์ดแวร์ ---
+model Product {
+  id       Int    @id @default(autoincrement()) // รหัสสินค้า (รันเลขอัตโนมัติ)
+  name     String // ชื่อสินค้า เช่น "Intel Core i9-14900K"
+  price    Int // ราคา
+  brand    String // ชื่อแบรนด์ เช่น "Intel", "ASUS"
+  category String // หมวดหมู่ เช่น "cpu", "gpu", "mb"
+  image    String // ลิงก์รูปภาพ
+
+  // ข้อมูลเฉพาะทาง (ใส่เครื่องหมาย ? หมายถึง มีหรือไม่มีก็ได้)
+  socket  String? // เช่น "LGA1700" หรือ "AM5"
+  tdp     Int? // อัตราการกินไฟ (วัตต์)
+  wattage Int? // กำลังจ่ายไฟของ PSU (วัตต์)
+
+  createdAt DateTime @default(now()) // วันที่เพิ่มสินค้า
+  updatedAt DateTime @updatedAt // วันที่อัปเดตข้อมูลล่าสุด
+}

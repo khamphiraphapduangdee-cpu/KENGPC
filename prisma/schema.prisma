@@ -1,0 +1,28 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// --- สร้างตารางเก็บข้อมูลฮาร์ดแวร์ ---
+model Product {
+  id        Int      @id @default(autoincrement())
+  name      String
+  price     Int
+  brand     String
+  category  String
+  image     String
+  stock     Int      @default(0)  // <-- เพิ่มบรรทัดนี้! (ค่าเริ่มต้นเป็น 0)
+  
+  // ... ส่วนที่เหลือเหมือนเดิม ...
+  socket    String?
+  tdp       Int?
+  wattage   Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
