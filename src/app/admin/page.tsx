@@ -104,7 +104,7 @@ export default function AdminPage() {
                 <header className="flex justify-between items-end mb-10">
                     <div>
                         <h1 className="text-4xl font-black italic tracking-tighter text-white">
-                            CORE <span className="text-cyan-500">ADMIN</span>
+                            KENG <span className="text-cyan-500">ADMIN</span>
                         </h1>
                         <p className="text-slate-500 text-sm">Inventory & Stock Management</p>
                     </div>
